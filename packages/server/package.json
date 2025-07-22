@@ -1,0 +1,63 @@
+{
+  "name": "@rn-ai-screenshot/server",
+  "version": "0.1.0",
+  "description": "Local server for React Native AI screenshot SDK with WebSocket and MCP support",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "rn-ai-screenshot-server": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/cli.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "clean": "rimraf dist"
+  },
+  "keywords": [
+    "react-native",
+    "ai",
+    "screenshot",
+    "server",
+    "websocket",
+    "mcp"
+  ],
+  "author": "React Native AI Screenshot SDK Team",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.4.0",
+    "commander": "^11.0.0",
+    "qrcode-terminal": "^0.12.0",
+    "ws": "^8.13.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.4.0",
+    "@types/qrcode-terminal": "^0.12.0",
+    "@types/ws": "^8.5.0",
+    "jest": "^29.5.0",
+    "rimraf": "^5.0.1",
+    "typescript": "^5.1.6"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": ["<rootDir>/src/__tests__/setup.ts"],
+    "testMatch": [
+      "<rootDir>/src/**/__tests__/**/*.{js,ts}",
+      "<rootDir>/src/**/*.{test,spec}.{js,ts}"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!src/**/*.d.ts",
+      "!src/__tests__/**"
+    ]
+  }
+}
