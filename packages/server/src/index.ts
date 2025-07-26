@@ -6,5 +6,3 @@ export { MCPServer } from './mcp/MCPServer';
 export { WebSocketServer } from './websocket/WebSocketServer';
 export type { ServerConfig, MCPTool } from './types';
 
-// Legacy exports for backward compatibility
-export { LiveContextServer as AIScreenshotServer } from './server/LiveContextServer';

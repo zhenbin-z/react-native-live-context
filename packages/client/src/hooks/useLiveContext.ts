@@ -51,5 +51,3 @@ export function useLiveContext() {
   };
 }
 
-// Legacy export for backward compatibility
-export const useAIScreenshot = useLiveContext;

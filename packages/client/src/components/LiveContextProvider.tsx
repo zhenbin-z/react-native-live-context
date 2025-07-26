@@ -305,6 +305,4 @@ export const useLiveContextContext = () => {
   return context;
 };
 
-// Legacy export for backward compatibility
-export const AIScreenshotProvider = LiveContextProvider;
-export const useAIScreenshotContext = useLiveContextContext;
+

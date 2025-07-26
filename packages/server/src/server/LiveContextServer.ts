@@ -314,5 +314,3 @@ export class LiveContextServer extends EventEmitter {
   }
 }
 
-// Legacy export for backward compatibility
-export const AIScreenshotServer = LiveContextServer;

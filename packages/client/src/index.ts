@@ -11,6 +11,3 @@ export { createSDKConfig } from './utils/config';
 // Re-export types for convenience
 export type { ScreenshotViewRef } from './components/ScreenshotView';
 
-// Legacy exports for backward compatibility
-export { LiveContextProvider as AIScreenshotProvider } from './components/LiveContextProvider';
-export { useLiveContext as useAIScreenshot } from './hooks/useLiveContext';
