@@ -1,7 +1,11 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
 import { Text } from 'react-native';
-import { AIScreenshotProvider, useAIScreenshotContext } from '../../components/AIScreenshotProvider';
+import { LiveContextProvider, useLiveContextContext } from '../../components/LiveContextProvider';
+
+// Legacy aliases for the test
+const AIScreenshotProvider = LiveContextProvider;
+const useAIScreenshotContext = useLiveContextContext;
 
 // Mock the services
 jest.mock('../../services/ServiceDiscovery');

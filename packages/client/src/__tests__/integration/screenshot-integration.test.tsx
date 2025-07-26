@@ -1,8 +1,12 @@
 import React from 'react';
 import { render, waitFor, act } from '@testing-library/react-native';
 import { Text, AppState } from 'react-native';
-import { AIScreenshotProvider } from '../../components/AIScreenshotProvider';
-import { useAIScreenshot } from '../../hooks/useAIScreenshot';
+import { LiveContextProvider } from '../../components/LiveContextProvider';
+import { useLiveContext } from '../../hooks/useLiveContext';
+
+// Legacy aliases for the test
+const AIScreenshotProvider = LiveContextProvider;
+const useAIScreenshot = useLiveContext;
 import { ScreenshotView } from '../../components/ScreenshotView';
 import { ConnectionStatus } from '../../components/ConnectionStatus';
 

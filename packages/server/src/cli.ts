@@ -191,7 +191,7 @@ function displayReactNativeConfig(): void {
 📱 React Native Integration:
 
 1. Install the client SDK:
-   npm install @rn-ai-screenshot/client
+   npm install @react-native-live-context/client
 
 2. Add to your App.js/App.tsx:
 
@@ -211,7 +211,7 @@ function displayReactNativeConfig(): void {
 
 3. Optional: Add connection status indicator:
 
-   import { ConnectionStatus } from '@rn-ai-screenshot/client';
+   import { ConnectionStatus } from '@react-native-live-context/client';
 
    <ConnectionStatus position="top" />
 `);

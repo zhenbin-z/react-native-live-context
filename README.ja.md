@@ -37,27 +37,27 @@ AI アシスタント（Claude、Kiro など）が MCP（Model Context Protocol�
 
 ```bash
 # React Nativeプロジェクトにクライアント SDKをインストール
-npm install @rn-ai-screenshot/client
+npm install @react-native-live-context/client
 
 # サーバーをグローバルまたは開発環境にインストール
-npm install -g @rn-ai-screenshot/server
+npm install -g @react-native-live-context/server
 ```
 
 ### 2. React Nativeアプリに追加
 
 ```tsx
-import { AIScreenshotProvider, ConnectionStatus } from '@rn-ai-screenshot/client';
+import { LiveContextProvider, ConnectionStatus } from '@react-native-live-context/client';
 
 export default function App() {
   return (
-    <AIScreenshotProvider config={{ 
+    <LiveContextProvider config={{ 
       autoDiscovery: true,
       logLevel: 'info'
     }}>
       <ConnectionStatus position="top" />
       {/* あなたのアプリコンポーネント */}
       <YourAppContent />
-    </AIScreenshotProvider>
+    </LiveContextProvider>
   );
 }
 ```
@@ -66,10 +66,10 @@ export default function App() {
 
 ```bash
 # デフォルト設定で起動
-rn-ai-screenshot-server start
+react-native-live-context-server start
 
 # カスタムオプション付きで起動
-rn-ai-screenshot-server start --port 8080 --host localhost --qr
+react-native-live-context-server start --port 8080 --host localhost --qr
 ```
 
 ### 4. AIアシスタントの設定
@@ -80,7 +80,7 @@ AIアシスタントにこのMCPサーバー設定を追加：
 {
   "mcpServers": {
     "react-native-screenshot": {
-      "command": "rn-ai-screenshot-server",
+      "command": "react-native-live-context-server",
       "args": ["start", "--mcp"],
       "env": {}
     }
@@ -103,10 +103,10 @@ AIアシスタントにこのMCPサーバー設定を追加：
 ### 基本的なスクリーンショット
 
 ```tsx
-import { useAIScreenshot } from '@rn-ai-screenshot/client';
+import { useLiveContext } from '@react-native-live-context/client';
 
 function MyComponent() {
-  const { takeScreenshot, isConnected } = useAIScreenshot();
+  const { takeScreenshot, isConnected } = useLiveContext();
   
   const handleScreenshot = async () => {
     if (isConnected) {
@@ -124,7 +124,7 @@ function MyComponent() {
 ### カスタムスクリーンショットビュー
 
 ```tsx
-import { ScreenshotView } from '@rn-ai-screenshot/client';
+import { ScreenshotView } from '@react-native-live-context/client';
 
 function MyScreen() {
   return (
@@ -164,7 +164,7 @@ const config = {
 
 ```bash
 # コマンドラインオプション
-rn-ai-screenshot-server start \
+react-native-live-context-server start \
   --port 8080 \
   --host localhost \
   --max-connections 100 \
@@ -178,8 +178,8 @@ rn-ai-screenshot-server start \
 
 ```bash
 # リポジトリをクローン
-git clone https://github.com/your-org/react-native-ai-screenshot-sdk.git
-cd react-native-ai-screenshot-sdk
+git clone https://github.com/your-org/react-native-live-context.git
+cd react-native-live-context
 
 # 依存関係をインストール
 npm install
@@ -215,7 +215,7 @@ npm run test -- --coverage
 ### よくある問題
 
 1. **サーバーが見つからない**
-   - サーバーが実行中か確認: `rn-ai-screenshot-server status`
+   - サーバーが実行中か確認: `react-native-live-context-server status`
    - ファイアウォール設定を確認
    - 自動検出の代わりに明示的なサーバーURLを試す
 
@@ -232,11 +232,11 @@ npm run test -- --coverage
 
 ```bash
 # サーバーステータスを確認
-rn-ai-screenshot-server status
+react-native-live-context-server status
 
 # 設定例を表示
-rn-ai-screenshot-server config --react-native
-rn-ai-screenshot-server config --mcp
+react-native-live-context-server config --react-native
+react-native-live-context-server config --mcp
 ```
 
 ## 📖 APIリファレンス
@@ -272,10 +272,10 @@ MIT License - 詳細は[LICENSE](./LICENSE)ファイルをご覧ください。
 
 ## 🔗 リンク
 
-- [GitHubリポジトリ](https://github.com/your-org/react-native-ai-screenshot-sdk)
-- [NPMパッケージ - クライアント](https://www.npmjs.com/package/@rn-ai-screenshot/client)
-- [NPMパッケージ - サーバー](https://www.npmjs.com/package/@rn-ai-screenshot/server)
-- [ドキュメント](https://your-org.github.io/react-native-ai-screenshot-sdk)
+- [GitHubリポジトリ](https://github.com/your-org/react-native-live-context)
+- [NPMパッケージ - クライアント](https://www.npmjs.com/package/@react-native-live-context/client)
+- [NPMパッケージ - サーバー](https://www.npmjs.com/package/@react-native-live-context/server)
+- [ドキュメント](https://your-org.github.io/react-native-live-context)
 
 ---
 

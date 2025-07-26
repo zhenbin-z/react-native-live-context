@@ -22,7 +22,7 @@
     "rootDir": "./src",
     "baseUrl": ".",
     "paths": {
-      "@rn-ai-screenshot/*": ["packages/*/src"]
+      "@react-native-live-context/*": ["packages/*/src"]
     }
   },
   "include": [

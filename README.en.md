@@ -37,27 +37,27 @@ This is a monorepo containing:
 
 ```bash
 # Install client SDK in your React Native project
-npm install @rn-ai-screenshot/client
+npm install @react-native-live-context/client
 
 # Install server globally or in your development environment
-npm install -g @rn-ai-screenshot/server
+npm install -g @react-native-live-context/server
 ```
 
 ### 2. Add to your React Native app
 
 ```tsx
-import { AIScreenshotProvider, ConnectionStatus } from '@rn-ai-screenshot/client';
+import { LiveContextProvider, ConnectionStatus } from '@react-native-live-context/client';
 
 export default function App() {
   return (
-    <AIScreenshotProvider config={{ 
+    <LiveContextProvider config={{ 
       autoDiscovery: true,
       logLevel: 'info'
     }}>
       <ConnectionStatus position="top" />
       {/* Your app components */}
       <YourAppContent />
-    </AIScreenshotProvider>
+    </LiveContextProvider>
   );
 }
 ```
@@ -66,10 +66,10 @@ export default function App() {
 
 ```bash
 # Start with default settings
-rn-ai-screenshot-server start
+react-native-live-context-server start
 
 # Or with custom options
-rn-ai-screenshot-server start --port 8080 --host localhost --qr
+react-native-live-context-server start --port 8080 --host localhost --qr
 ```
 
 ### 4. Configure your AI assistant
@@ -80,7 +80,7 @@ Add this MCP server configuration to your AI assistant:
 {
   "mcpServers": {
     "react-native-screenshot": {
-      "command": "rn-ai-screenshot-server",
+      "command": "react-native-live-context-server",
       "args": ["start", "--mcp"],
       "env": {}
     }
@@ -103,10 +103,10 @@ Once configured, your AI assistant will have access to these tools:
 ### Basic Screenshot
 
 ```tsx
-import { useAIScreenshot } from '@rn-ai-screenshot/client';
+import { useLiveContext } from '@react-native-live-context/client';
 
 function MyComponent() {
-  const { takeScreenshot, isConnected } = useAIScreenshot();
+  const { takeScreenshot, isConnected } = useLiveContext();
   
   const handleScreenshot = async () => {
     if (isConnected) {
@@ -124,7 +124,7 @@ function MyComponent() {
 ### Custom Screenshot View
 
 ```tsx
-import { ScreenshotView } from '@rn-ai-screenshot/client';
+import { ScreenshotView } from '@react-native-live-context/client';
 
 function MyScreen() {
   return (
@@ -164,7 +164,7 @@ const config = {
 
 ```bash
 # Command line options
-rn-ai-screenshot-server start \
+react-native-live-context-server start \
   --port 8080 \
   --host localhost \
   --max-connections 100 \
@@ -178,8 +178,8 @@ rn-ai-screenshot-server start \
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/react-native-ai-screenshot-sdk.git
-cd react-native-ai-screenshot-sdk
+git clone https://github.com/your-org/react-native-live-context.git
+cd react-native-live-context
 
 # Install dependencies
 npm install
@@ -215,7 +215,7 @@ npm run test -- --coverage
 ### Common Issues
 
 1. **Server not found**
-   - Ensure the server is running: `rn-ai-screenshot-server status`
+   - Ensure the server is running: `react-native-live-context-server status`
    - Check firewall settings
    - Try explicit server URL instead of auto-discovery
 
@@ -232,11 +232,11 @@ npm run test -- --coverage
 
 ```bash
 # Check server status
-rn-ai-screenshot-server status
+react-native-live-context-server status
 
 # Show configuration examples
-rn-ai-screenshot-server config --react-native
-rn-ai-screenshot-server config --mcp
+react-native-live-context-server config --react-native
+react-native-live-context-server config --mcp
 ```
 
 ## 📖 API Reference
@@ -272,10 +272,10 @@ MIT License - see [LICENSE](./LICENSE) file for details.
 
 ## 🔗 Links
 
-- [GitHub Repository](https://github.com/your-org/react-native-ai-screenshot-sdk)
-- [NPM Package - Client](https://www.npmjs.com/package/@rn-ai-screenshot/client)
-- [NPM Package - Server](https://www.npmjs.com/package/@rn-ai-screenshot/server)
-- [Documentation](https://your-org.github.io/react-native-ai-screenshot-sdk)
+- [GitHub Repository](https://github.com/your-org/react-native-live-context)
+- [NPM Package - Client](https://www.npmjs.com/package/@react-native-live-context/client)
+- [NPM Package - Server](https://www.npmjs.com/package/@react-native-live-context/server)
+- [Documentation](https://your-org.github.io/react-native-live-context)
 
 ---
 
