@@ -1,4 +1,4 @@
-# React Native AI Screenshot SDK
+# React Native Live Context
 
 > 🤖 **AI生成プロジェクト**: このプロジェクト全体は、AI支援ソフトウェア開発の力を実証するために、Kiro AIアシスタントによって生成されました。
 
@@ -19,8 +19,8 @@ AI アシスタント（Claude、Kiro など）が MCP（Model Context Protocol�
 
 このmonorepoには以下が含まれています：
 
-- `@rn-ai-screenshot/client` - アプリ用React Native SDK
-- `@rn-ai-screenshot/server` - WebSocket + MCPサポート付きローカルサーバー
+- `@react-native-live-context/client` - アプリ用React Native SDK
+- `@react-native-live-context/server` - WebSocket + MCPサポート付きローカルサーバー
 
 ## 🏗️ アーキテクチャ
 

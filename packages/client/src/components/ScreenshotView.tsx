@@ -1,6 +1,6 @@
 import React, { useRef, useCallback, forwardRef, useImperativeHandle } from 'react';
 import { View, ViewProps } from 'react-native';
-import { useAIScreenshot } from '../hooks/useAIScreenshot';
+import { useLiveContext } from '../hooks/useLiveContext';
 import { ScreenshotOptions } from '../types';
 
 interface ScreenshotViewProps extends ViewProps {
@@ -17,7 +17,7 @@ export interface ScreenshotViewRef {
 export const ScreenshotView = forwardRef<ScreenshotViewRef, ScreenshotViewProps>(
   ({ children, onScreenshot, onError, screenshotOptions, ...viewProps }, ref) => {
     const viewRef = useRef<View>(null);
-    const { takeScreenshot: takeFullScreenshot } = useAIScreenshot();
+    const { takeScreenshot: takeFullScreenshot } = useLiveContext();
 
     const takeScreenshot = useCallback(async (options?: ScreenshotOptions): Promise<string> => {
       try {

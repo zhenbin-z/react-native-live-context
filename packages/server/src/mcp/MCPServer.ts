@@ -36,7 +36,7 @@ export class MCPServer {
     // Initialize MCP server
     this.server = new Server(
       {
-        name: 'react-native-ai-screenshot-server',
+        name: 'react-native-live-context-server',
         version: '1.0.0',
       },
       {
