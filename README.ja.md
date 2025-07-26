@@ -268,7 +268,7 @@ react-native-live-context-server config --mcp
 
 ## 📄 ライセンス
 
-MIT License - 詳細は[LICENSE](./LICENSE)ファイルをご覧ください。
+Apache License 2.0 - 詳細は[LICENSE](./LICENSE)ファイルをご覧ください。
 
 ## 🔗 リンク
 
