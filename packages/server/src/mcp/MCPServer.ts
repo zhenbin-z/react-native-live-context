@@ -38,11 +38,6 @@ export class MCPServer {
       {
         name: 'react-native-live-context-server',
         version: '1.0.0',
-      },
-      {
-        capabilities: {
-          tools: {},
-        },
       }
     );
 
