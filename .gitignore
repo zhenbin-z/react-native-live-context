@@ -109,4 +109,15 @@ logs
 
 # Temporary folders
 tmp/
-temp/
+temp/# 
+Example app
+example/node_modules/
+example/ios/build/
+example/android/build/
+example/android/app/build/
+example/.bundle/
+example/metro.config.js
+example/babel.config.js
+
+# Release
+lerna-debug.log
