@@ -8,7 +8,6 @@
   ],
   "scripts": {
     "build": "lerna run build",
-
     "lint": "lerna run lint",
     "clean": "lerna clean && rimraf node_modules",
     "bootstrap": "lerna bootstrap",
@@ -19,9 +18,14 @@
     "example:android": "cd example && npm run android",
     "example:ios": "cd example && npm run ios",
     "example:start": "cd example && npm start",
+    "version": "lerna version --conventional-commits",
+    "publish": "lerna publish from-package",
+    "prerelease": "lerna version prerelease --conventional-commits",
     "prepare": "husky install"
   },
   "devDependencies": {
+    "@commitlint/cli": "^17.6.0",
+    "@commitlint/config-conventional": "^17.6.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "concurrently": "^8.2.0",

@@ -5,11 +5,13 @@
     "publish": {
       "conventionalCommits": true,
       "message": "chore(release): publish",
-      "registry": "https://registry.npmjs.org/"
+      "registry": "https://registry.npmjs.org",
+      "access": "public"
     },
-    "bootstrap": {
-      "ignore": "component-*",
-      "npmClientArgs": ["--no-package-lock"]
+    "version": {
+      "allowBranch": ["master", "develop", "beta", "alpha"],
+      "conventionalCommits": true,
+      "message": "chore(release): %s"
     }
   },
   "packages": [
