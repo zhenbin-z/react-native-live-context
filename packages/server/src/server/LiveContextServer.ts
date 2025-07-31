@@ -6,6 +6,7 @@ import { MessageHandler } from '../messaging/MessageHandler';
 import { ScreenshotService } from '../services/ScreenshotService';
 import { ContextService } from '../services/ContextService';
 import { MCPServer } from '../mcp/MCPServer';
+import { RestApiServer } from '../api/RestApiServer';
 
 export class LiveContextServer extends EventEmitter {
   private config: ServerConfig;
@@ -17,6 +18,7 @@ export class LiveContextServer extends EventEmitter {
   private screenshotService: ScreenshotService;
   private contextService: ContextService;
   private mcpServer: MCPServer;
+  private restApiServer: RestApiServer;
   
   private isRunning = false;
   private startTime = 0;
@@ -49,6 +51,15 @@ export class LiveContextServer extends EventEmitter {
       this.messageHandler,
       this.screenshotService,
       this.contextService
+    );
+
+    // Initialize REST API server
+    this.restApiServer = new RestApiServer(
+      this.config,
+      this.messageHandler,
+      this.screenshotService,
+      this.contextService,
+      this.webSocketServer
     );
 
     this.logger.info('All services initialized');
@@ -120,6 +131,9 @@ export class LiveContextServer extends EventEmitter {
       // Start WebSocket server first
       await this.webSocketServer.start();
 
+      // Start REST API server
+      await this.restApiServer.start();
+
       // Start MCP server
       await this.mcpServer.start();
 
@@ -158,6 +172,7 @@ export class LiveContextServer extends EventEmitter {
 
       // Stop services in reverse order
       await this.mcpServer.stop();
+      await this.restApiServer.stop();
       await this.webSocketServer.stop();
 
       this.isRunning = false;
@@ -198,12 +213,14 @@ export class LiveContextServer extends EventEmitter {
   private displayConnectionInfo(): void {
     const wsPort = this.config.websocket.port;
     const wsHost = this.config.websocket.host;
+    const apiPort = this.restApiServer.getPort();
     const tools = this.mcpServer.getRegisteredTools();
 
-    console.log('\n' + '='.repeat(60));
+    console.log('\n' + '='.repeat(70));
     console.log('🚀 Live Context Server Started Successfully!');
-    console.log('='.repeat(60));
+    console.log('='.repeat(70));
     console.log(`📡 WebSocket Server: ws://${wsHost}:${wsPort}`);
+    console.log(`🌐 REST API Server: http://${wsHost}:${apiPort}`);
     console.log(`🔧 MCP Tools Available: ${tools.length}`);
     console.log(`   ${tools.map(tool => `• ${tool}`).join('\n   ')}`);
     console.log('\n📱 React Native Integration:');
@@ -215,10 +232,15 @@ export class LiveContextServer extends EventEmitter {
     console.log('   }}>');
     console.log('     <App />');
     console.log('   </LiveContextProvider>');
+    console.log('\n🌐 REST API Endpoints:');
+    console.log(`   Health Check: GET http://${wsHost}:${apiPort}/health`);
+    console.log(`   Server Status: GET http://${wsHost}:${apiPort}/api/status`);
+    console.log(`   Take Screenshot: POST http://${wsHost}:${apiPort}/api/screenshot`);
+    console.log(`   Get Context: POST http://${wsHost}:${apiPort}/api/context`);
     console.log('\n🤖 AI Assistant Configuration:');
     console.log('   Add this MCP server to your AI assistant:');
     console.log('   Command: node path/to/server/dist/cli.js');
-    console.log('='.repeat(60) + '\n');
+    console.log('='.repeat(70) + '\n');
   }
 
   // Public API methods
