@@ -8,13 +8,17 @@
   ],
   "scripts": {
     "build": "lerna run build",
-    "test": "lerna run test",
+
     "lint": "lerna run lint",
     "clean": "lerna clean && rimraf node_modules",
     "bootstrap": "lerna bootstrap",
     "dev:client": "cd packages/client && npm run dev",
     "dev:server": "cd packages/server && npm run dev",
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "example:install": "cd example && npm install",
+    "example:android": "cd example && npm run android",
+    "example:ios": "cd example && npm run ios",
+    "example:start": "cd example && npm start",
     "prepare": "husky install"
   },
   "devDependencies": {
