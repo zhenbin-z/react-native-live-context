@@ -9,15 +9,9 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -28,21 +22,17 @@ jobs:
 
       - name: Install dependencies
         run: |
-          yarn install
+          yarn install --prefer-offline --pure-lockfile || yarn install
 
       - name: Build packages
         run: yarn build
 
-      - name: Configure Git
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
       - name: Publish to NPM
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Version and publish packages to NPM
-          npx lerna version --conventional-commits --yes --create-release github
-          npx lerna publish from-package --yes
+          cd packages/client
+          npm publish
+          
+          cd ../server
+          npm publish

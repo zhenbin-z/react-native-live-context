@@ -4,25 +4,14 @@ on:
   push:
     branches:
       - develop
-      - beta
-  pull_request:
-    branches:
-      - develop
-      - "feature/**"
   workflow_dispatch:
 
 jobs:
   prerelease:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -33,21 +22,31 @@ jobs:
 
       - name: Install dependencies
         run: |
-          yarn install
+          yarn install --prefer-offline --pure-lockfile || yarn install
 
       - name: Build packages
         run: yarn build
 
-      - name: Configure Git
+      - name: Update version for prerelease
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          # Get current version and create beta version
+          CURRENT_VERSION=$(node -p "require('./packages/client/package.json').version")
+          BETA_VERSION="${CURRENT_VERSION}-beta.$(date +%s)"
+          
+          # Update client version
+          cd packages/client
+          npm version $BETA_VERSION --no-git-tag-version
+          
+          # Update server version
+          cd ../server
+          npm version $BETA_VERSION --no-git-tag-version
 
-      - name: Publish prerelease to NPM
+      - name: Publish beta to NPM
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Version and publish prerelease packages to NPM
-          npx lerna version prerelease --preid beta --conventional-commits --yes
-          npx lerna publish from-package --dist-tag beta --yes
+          cd packages/client
+          npm publish --tag beta
+          
+          cd ../server
+          npm publish --tag beta

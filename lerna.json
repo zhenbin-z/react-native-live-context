@@ -9,12 +9,10 @@
       "access": "public"
     },
     "version": {
-      "allowBranch": ["master", "develop", "beta", "alpha"],
+      "allowBranch": "*",
       "conventionalCommits": true,
       "message": "chore(release): %s"
     }
   },
-  "packages": [
-    "packages/*"
-  ]
+  "packages": ["packages/*"]
 }
