@@ -11,7 +11,7 @@ export class Logger {
   private level: LogLevel;
   private prefix: string;
 
-  constructor(level: LogLevel = 'warn', prefix: string = '[AI-Screenshot-SDK]') {
+  constructor(level: LogLevel = 'warn', prefix: string = '[LiveContext-SDK]') {
     this.level = level;
     this.prefix = prefix;
   }

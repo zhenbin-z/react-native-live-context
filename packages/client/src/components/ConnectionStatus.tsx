@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { useAIScreenshot } from '../hooks/useAIScreenshot';
+import { useLiveContext } from '../hooks/useLiveContext';
 
 interface ConnectionStatusProps {
   style?: any;
@@ -13,7 +13,7 @@ export const ConnectionStatus: React.FC<ConnectionStatusProps> = ({
   showWhenConnected = false,
   position = 'top',
 }) => {
-  const { connectionStatus, isConnected, error, config } = useAIScreenshot();
+  const { connectionStatus, isConnected, error, config } = useLiveContext();
 
   // Don't show in production unless explicitly configured
   if (!config.showConnectionStatus && !__DEV__) {
@@ -36,10 +36,10 @@ export const ConnectionStatus: React.FC<ConnectionStatusProps> = ({
 
   const getStatusText = () => {
     switch (connectionStatus) {
-      case 'connected': return 'AI Screenshot Ready';
-      case 'connecting': return 'Connecting to AI Server...';
+      case 'connected': return 'Live Context Ready';
+      case 'connecting': return 'Connecting to Context Server...';
       case 'error': return error ? `Error: ${error}` : 'Connection Error';
-      default: return 'AI Screenshot Disconnected';
+      default: return 'Live Context Disconnected';
     }
   };
 

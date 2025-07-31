@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import { AIScreenshotServer } from './server/AIScreenshotServer';
+import { LiveContextServer } from './server/LiveContextServer';
 import { ServerConfig } from './types';
 import { Logger } from './utils/Logger';
 import * as qrcode from 'qrcode-terminal';
@@ -33,13 +33,13 @@ const defaultConfig: ServerConfig = {
 };
 
 program
-  .name('rn-ai-screenshot-server')
-  .description('React Native AI Screenshot Server - WebSocket + MCP server for AI assistants')
+  .name('react-native-live-context-server')
+  .description('React Native Live Context Server - WebSocket + MCP server for AI assistants')
   .version('1.0.0');
 
 program
   .command('start')
-  .description('Start the AI Screenshot Server')
+  .description('Start the Live Context Server')
   .option('-p, --port <port>', 'WebSocket server port', '8080')
   .option('-h, --host <host>', 'WebSocket server host', 'localhost')
   .option('--max-connections <max>', 'Maximum WebSocket connections', '100')
@@ -73,10 +73,10 @@ program
         displayBanner();
       }
 
-      logger.info('Starting AI Screenshot Server', { config });
+      logger.info('Starting Live Context Server', { config });
 
       // Create and start server
-      const server = new AIScreenshotServer(config);
+      const server = new LiveContextServer(config);
 
       // Setup event handlers
       server.on('started', () => {
@@ -170,7 +170,7 @@ function displayBanner(): void {
   console.log(`
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║
-║    🚀 React Native AI Screenshot Server                     ║
+║    🚀 React Native Live Context Server                      ║
 ║                                                              ║
 ║    Bridge between React Native apps and AI assistants       ║
 ║    via WebSocket + MCP (Model Context Protocol)             ║
@@ -191,27 +191,27 @@ function displayReactNativeConfig(): void {
 📱 React Native Integration:
 
 1. Install the client SDK:
-   npm install @rn-ai-screenshot/client
+   npm install @react-native-live-context/client
 
 2. Add to your App.js/App.tsx:
 
-   import { AIScreenshotProvider } from '@rn-ai-screenshot/client';
+   import { LiveContextProvider } from '@react-native-live-context/client';
 
    export default function App() {
      return (
-       <AIScreenshotProvider config={{
+       <LiveContextProvider config={{
          autoDiscovery: true,
          // Or specify server directly:
          // serverUrl: 'ws://localhost:8080',
        }}>
          <YourAppContent />
-       </AIScreenshotProvider>
+       </LiveContextProvider>
      );
    }
 
 3. Optional: Add connection status indicator:
 
-   import { ConnectionStatus } from '@rn-ai-screenshot/client';
+   import { ConnectionStatus } from '@react-native-live-context/client';
 
    <ConnectionStatus position="top" />
 `);
@@ -250,7 +250,7 @@ function displayAllConfigs(): void {
 // Handle MCP mode (when called by AI assistant)
 if (process.argv.includes('--mcp') || process.env.MCP_MODE === 'true') {
   // Run in MCP mode - start server and connect to stdio
-  const server = new AIScreenshotServer(defaultConfig);
+  const server = new LiveContextServer(defaultConfig);
   
   server.start().catch((error) => {
     logger.error('Failed to start MCP server', { error });

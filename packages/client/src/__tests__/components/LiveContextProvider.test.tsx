@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
 import { Text } from 'react-native';
-import { AIScreenshotProvider, useAIScreenshotContext } from '../../components/AIScreenshotProvider';
+import { LiveContextProvider, useLiveContextContext } from '../../components/LiveContextProvider';
 
 // Mock the services
 jest.mock('../../services/ServiceDiscovery');
@@ -10,7 +10,7 @@ jest.mock('../../services/ScreenshotManager');
 jest.mock('../../services/ContextCollector');
 
 const TestComponent = () => {
-  const context = useAIScreenshotContext();
+  const context = useLiveContextContext();
   return (
     <Text testID="status">
       {context.isConnected ? 'connected' : 'disconnected'}
@@ -18,12 +18,12 @@ const TestComponent = () => {
   );
 };
 
-describe('AIScreenshotProvider', () => {
+describe('LiveContextProvider', () => {
   it('should render children', () => {
     const { getByTestId } = render(
-      <AIScreenshotProvider>
+      <LiveContextProvider>
         <Text testID="child">Test Child</Text>
-      </AIScreenshotProvider>
+      </LiveContextProvider>
     );
 
     expect(getByTestId('child')).toBeTruthy();
@@ -31,22 +31,22 @@ describe('AIScreenshotProvider', () => {
 
   it('should provide context to children', () => {
     const { getByTestId } = render(
-      <AIScreenshotProvider>
+      <LiveContextProvider>
         <TestComponent />
-      </AIScreenshotProvider>
+      </LiveContextProvider>
     );
 
     expect(getByTestId('status')).toBeTruthy();
   });
 
-  it('should throw error when useAIScreenshotContext used outside provider', () => {
+  it('should throw error when useLiveContextContext used outside provider', () => {
     const TestComponentOutside = () => {
-      useAIScreenshotContext();
+      useLiveContextContext();
       return <Text>Test</Text>;
     };
 
     expect(() => render(<TestComponentOutside />)).toThrow(
-      'useAIScreenshotContext must be used within AIScreenshotProvider'
+      'useLiveContextContext must be used within LiveContextProvider'
     );
   });
 
@@ -57,9 +57,9 @@ describe('AIScreenshotProvider', () => {
     };
 
     const { getByTestId } = render(
-      <AIScreenshotProvider config={customConfig}>
+      <LiveContextProvider config={customConfig}>
         <TestComponent />
-      </AIScreenshotProvider>
+      </LiveContextProvider>
     );
 
     expect(getByTestId('status')).toBeTruthy();

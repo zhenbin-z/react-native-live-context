@@ -20,7 +20,7 @@ export class Logger {
   private prefix: string;
   private useColors: boolean;
 
-  constructor(level: LogLevel = 'info', prefix: string = '[AI-Screenshot-Server]', useColors: boolean = true) {
+  constructor(level: LogLevel = 'info', prefix: string = '[LiveContext-Server]', useColors: boolean = true) {
     this.level = level;
     this.prefix = prefix;
     this.useColors = useColors && process.stdout.isTTY;

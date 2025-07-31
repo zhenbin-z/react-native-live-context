@@ -6,8 +6,9 @@ import { MessageHandler } from '../messaging/MessageHandler';
 import { ScreenshotService } from '../services/ScreenshotService';
 import { ContextService } from '../services/ContextService';
 import { MCPServer } from '../mcp/MCPServer';
+import { RestApiServer } from '../api/RestApiServer';
 
-export class AIScreenshotServer extends EventEmitter {
+export class LiveContextServer extends EventEmitter {
   private config: ServerConfig;
   private logger: Logger;
   
@@ -17,6 +18,7 @@ export class AIScreenshotServer extends EventEmitter {
   private screenshotService: ScreenshotService;
   private contextService: ContextService;
   private mcpServer: MCPServer;
+  private restApiServer: RestApiServer;
   
   private isRunning = false;
   private startTime = 0;
@@ -24,14 +26,14 @@ export class AIScreenshotServer extends EventEmitter {
   constructor(config: ServerConfig) {
     super();
     this.config = config;
-    this.logger = new Logger('info', '[AIScreenshotServer]');
+    this.logger = new Logger('info', '[LiveContextServer]');
     
     this.initializeServices();
     this.setupEventHandlers();
   }
 
   private initializeServices(): void {
-    this.logger.info('Initializing AI Screenshot Server services');
+    this.logger.info('Initializing Live Context Server services');
 
     // Initialize WebSocket server
     this.webSocketServer = new WebSocketServer(this.config);
@@ -49,6 +51,15 @@ export class AIScreenshotServer extends EventEmitter {
       this.messageHandler,
       this.screenshotService,
       this.contextService
+    );
+
+    // Initialize REST API server
+    this.restApiServer = new RestApiServer(
+      this.config,
+      this.messageHandler,
+      this.screenshotService,
+      this.contextService,
+      this.webSocketServer
     );
 
     this.logger.info('All services initialized');
@@ -110,7 +121,7 @@ export class AIScreenshotServer extends EventEmitter {
     }
 
     try {
-      this.logger.info('Starting AI Screenshot Server', {
+      this.logger.info('Starting Live Context Server', {
         websocketPort: this.config.websocket.port,
         websocketHost: this.config.websocket.host,
       });
@@ -120,12 +131,15 @@ export class AIScreenshotServer extends EventEmitter {
       // Start WebSocket server first
       await this.webSocketServer.start();
 
+      // Start REST API server
+      await this.restApiServer.start();
+
       // Start MCP server
       await this.mcpServer.start();
 
       this.isRunning = true;
 
-      this.logger.info('AI Screenshot Server started successfully', {
+      this.logger.info('Live Context Server started successfully', {
         websocketPort: this.config.websocket.port,
         mcpToolsCount: this.mcpServer.getRegisteredTools().length,
         uptime: Date.now() - this.startTime,
@@ -138,7 +152,7 @@ export class AIScreenshotServer extends EventEmitter {
 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error('Failed to start AI Screenshot Server', { error: errorMessage });
+      this.logger.error('Failed to start Live Context Server', { error: errorMessage });
       
       // Cleanup on failure
       await this.cleanup();
@@ -154,15 +168,16 @@ export class AIScreenshotServer extends EventEmitter {
     }
 
     try {
-      this.logger.info('Stopping AI Screenshot Server');
+      this.logger.info('Stopping Live Context Server');
 
       // Stop services in reverse order
       await this.mcpServer.stop();
+      await this.restApiServer.stop();
       await this.webSocketServer.stop();
 
       this.isRunning = false;
 
-      this.logger.info('AI Screenshot Server stopped successfully', {
+      this.logger.info('Live Context Server stopped successfully', {
         uptime: Date.now() - this.startTime,
       });
 
@@ -170,13 +185,13 @@ export class AIScreenshotServer extends EventEmitter {
 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error('Error stopping AI Screenshot Server', { error: errorMessage });
+      this.logger.error('Error stopping Live Context Server', { error: errorMessage });
       throw new Error(`Server shutdown failed: ${errorMessage}`);
     }
   }
 
   private async cleanup(): Promise<void> {
-    this.logger.info('Cleaning up AI Screenshot Server');
+    this.logger.info('Cleaning up Live Context Server');
 
     try {
       // Cleanup all services
@@ -189,7 +204,7 @@ export class AIScreenshotServer extends EventEmitter {
         await this.webSocketServer.stop();
       }
 
-      this.logger.info('AI Screenshot Server cleanup completed');
+      this.logger.info('Live Context Server cleanup completed');
     } catch (error) {
       this.logger.error('Error during cleanup', { error });
     }
@@ -198,27 +213,34 @@ export class AIScreenshotServer extends EventEmitter {
   private displayConnectionInfo(): void {
     const wsPort = this.config.websocket.port;
     const wsHost = this.config.websocket.host;
+    const apiPort = this.restApiServer.getPort();
     const tools = this.mcpServer.getRegisteredTools();
 
-    console.log('\n' + '='.repeat(60));
-    console.log('🚀 AI Screenshot Server Started Successfully!');
-    console.log('='.repeat(60));
+    console.log('\n' + '='.repeat(70));
+    console.log('🚀 Live Context Server Started Successfully!');
+    console.log('='.repeat(70));
     console.log(`📡 WebSocket Server: ws://${wsHost}:${wsPort}`);
+    console.log(`🌐 REST API Server: http://${wsHost}:${apiPort}`);
     console.log(`🔧 MCP Tools Available: ${tools.length}`);
     console.log(`   ${tools.map(tool => `• ${tool}`).join('\n   ')}`);
     console.log('\n📱 React Native Integration:');
     console.log('   Add this to your React Native app:');
     console.log('   ');
-    console.log('   <AIScreenshotProvider config={{');
+    console.log('   <LiveContextProvider config={{');
     console.log(`     serverUrl: 'ws://${wsHost}:${wsPort}',`);
     console.log('     autoDiscovery: true');
     console.log('   }}>');
     console.log('     <App />');
-    console.log('   </AIScreenshotProvider>');
+    console.log('   </LiveContextProvider>');
+    console.log('\n🌐 REST API Endpoints:');
+    console.log(`   Health Check: GET http://${wsHost}:${apiPort}/health`);
+    console.log(`   Server Status: GET http://${wsHost}:${apiPort}/api/status`);
+    console.log(`   Take Screenshot: POST http://${wsHost}:${apiPort}/api/screenshot`);
+    console.log(`   Get Context: POST http://${wsHost}:${apiPort}/api/context`);
     console.log('\n🤖 AI Assistant Configuration:');
     console.log('   Add this MCP server to your AI assistant:');
     console.log('   Command: node path/to/server/dist/cli.js');
-    console.log('='.repeat(60) + '\n');
+    console.log('='.repeat(70) + '\n');
   }
 
   // Public API methods
@@ -313,3 +335,4 @@ export class AIScreenshotServer extends EventEmitter {
     };
   }
 }
+

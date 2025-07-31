@@ -1,16 +1,16 @@
 import { useCallback } from 'react';
-import { useAIScreenshotContext } from '../components/AIScreenshotProvider';
+import { useLiveContextContext } from '../components/LiveContextProvider';
 import { ScreenshotOptions } from '../types';
 
 /**
- * Hook to interact with AI Screenshot functionality
+ * Hook to interact with Live Context functionality
  */
-export function useAIScreenshot() {
-  const context = useAIScreenshotContext();
+export function useLiveContext() {
+  const context = useLiveContextContext();
 
   const takeScreenshot = useCallback(async (options?: ScreenshotOptions): Promise<string> => {
     if (!context.isReady) {
-      throw new Error('AI Screenshot SDK is not ready. Please ensure the provider is properly initialized.');
+      throw new Error('Live Context SDK is not ready. Please ensure the provider is properly initialized.');
     }
 
     if (!context.isConnected) {
@@ -22,7 +22,7 @@ export function useAIScreenshot() {
 
   const getAppContext = useCallback(async (): Promise<any> => {
     if (!context.isReady) {
-      throw new Error('AI Screenshot SDK is not ready. Please ensure the provider is properly initialized.');
+      throw new Error('Live Context SDK is not ready. Please ensure the provider is properly initialized.');
     }
 
     if (!context.isConnected) {
@@ -50,3 +50,4 @@ export function useAIScreenshot() {
     hasError: context.connectionStatus === 'error' || !!context.error,
   };
 }
+

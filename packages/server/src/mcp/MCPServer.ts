@@ -34,17 +34,10 @@ export class MCPServer {
     this.contextService = contextService;
 
     // Initialize MCP server
-    this.server = new Server(
-      {
-        name: 'react-native-ai-screenshot-server',
-        version: '1.0.0',
-      },
-      {
-        capabilities: {
-          tools: {},
-        },
-      }
-    );
+    this.server = new Server({
+      name: 'react-native-live-context-server',
+      version: '1.0.0',
+    });
 
     this.setupServerHandlers();
     this.registerDefaultTools();
@@ -64,9 +57,9 @@ export class MCPServer {
     });
 
     // Handle tool calls
-    this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
+    this.server.setRequestHandler(CallToolRequestSchema, async request => {
       const { name, arguments: args } = request.params;
-      
+
       this.logger.info('Tool called', { name, args });
 
       const tool = this.tools.get(name);
@@ -78,25 +71,32 @@ export class MCPServer {
 
       try {
         const result = await tool.handler(args || {});
-        
-        this.logger.info('Tool executed successfully', { 
-          name, 
+
+        this.logger.info('Tool executed successfully', {
+          name,
           resultType: typeof result,
-          resultSize: JSON.stringify(result).length 
+          resultSize: JSON.stringify(result).length,
         });
 
         return {
           content: [
             {
               type: 'text',
-              text: typeof result === 'string' ? result : JSON.stringify(result, null, 2),
+              text:
+                typeof result === 'string'
+                  ? result
+                  : JSON.stringify(result, null, 2),
             },
           ],
         };
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        this.logger.error('Tool execution failed', { name, error: errorMessage });
-        
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+        this.logger.error('Tool execution failed', {
+          name,
+          error: errorMessage,
+        });
+
         return {
           content: [
             {
@@ -110,7 +110,7 @@ export class MCPServer {
     });
 
     // Handle server errors
-    this.server.onerror = (error) => {
+    this.server.onerror = error => {
       this.logger.error('MCP server error', { error: error.message });
     };
   }
@@ -119,13 +119,15 @@ export class MCPServer {
     // Register built-in tools
     this.registerTool({
       name: 'get_current_screenshot',
-      description: 'Capture a screenshot of the current React Native application screen',
+      description:
+        'Capture a screenshot of the current React Native application screen',
       inputSchema: {
         type: 'object',
         properties: {
           client_id: {
             type: 'string',
-            description: 'Optional client ID to capture screenshot from specific device',
+            description:
+              'Optional client ID to capture screenshot from specific device',
           },
           quality: {
             type: 'number',
@@ -148,7 +150,7 @@ export class MCPServer {
           },
         },
       },
-      handler: async (input) => {
+      handler: async input => {
         const screenshot = await this.screenshotService.requestScreenshot(
           input.client_id,
           {
@@ -174,29 +176,34 @@ export class MCPServer {
 
     this.registerTool({
       name: 'get_app_context',
-      description: 'Get the current context and state of the React Native application',
+      description:
+        'Get the current context and state of the React Native application',
       inputSchema: {
         type: 'object',
         properties: {
           client_id: {
             type: 'string',
-            description: 'Optional client ID to get context from specific device',
+            description:
+              'Optional client ID to get context from specific device',
           },
           include_component_tree: {
             type: 'boolean',
-            description: 'Include component tree in the response (default: true)',
+            description:
+              'Include component tree in the response (default: true)',
           },
           include_interactions: {
             type: 'boolean',
-            description: 'Include user interactions in the response (default: true)',
+            description:
+              'Include user interactions in the response (default: true)',
           },
           max_interactions: {
             type: 'number',
-            description: 'Maximum number of recent interactions to include (default: 10)',
+            description:
+              'Maximum number of recent interactions to include (default: 10)',
           },
         },
       },
-      handler: async (input) => {
+      handler: async input => {
         const context = await this.contextService.requestContext(
           input.client_id,
           {
@@ -235,12 +242,13 @@ export class MCPServer {
           },
           client_id: {
             type: 'string',
-            description: 'Optional client ID to send command to specific device',
+            description:
+              'Optional client ID to send command to specific device',
           },
         },
         required: ['command'],
       },
-      handler: async (input) => {
+      handler: async input => {
         const result = await this.messageHandler.sendCommand(
           input.command,
           input.params,
@@ -269,7 +277,7 @@ export class MCPServer {
       },
       handler: async () => {
         const clients = this.messageHandler['webSocketServer'].getClients();
-        
+
         return {
           success: true,
           devices: clients.map(client => ({
@@ -287,7 +295,8 @@ export class MCPServer {
 
     this.registerTool({
       name: 'get_server_status',
-      description: 'Get the current status and statistics of the screenshot server',
+      description:
+        'Get the current status and statistics of the screenshot server',
       inputSchema: {
         type: 'object',
         properties: {},
@@ -326,7 +335,9 @@ export class MCPServer {
       },
     });
 
-    this.logger.info('Default MCP tools registered', { count: this.tools.size });
+    this.logger.info('Default MCP tools registered', {
+      count: this.tools.size,
+    });
   }
 
   registerTool(tool: MCPTool): void {
@@ -360,7 +371,8 @@ export class MCPServer {
         toolsCount: this.tools.size,
       });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       this.logger.error('Failed to start MCP server', { error: errorMessage });
       throw new Error(`MCP server startup failed: ${errorMessage}`);
     }
@@ -380,7 +392,8 @@ export class MCPServer {
       this.isRunning = false;
       this.logger.info('MCP server stopped successfully');
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       this.logger.error('Error stopping MCP server', { error: errorMessage });
       throw new Error(`MCP server shutdown failed: ${errorMessage}`);
     }
@@ -417,7 +430,7 @@ export class MCPServer {
         this.logger.error('Error during MCP server cleanup', { error });
       });
     }
-    
+
     this.tools.clear();
     this.logger.info('MCP server cleaned up');
   }

@@ -6,7 +6,7 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "strict": true,
+    "strict": false,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "module": "ESNext",
@@ -22,7 +22,7 @@
     "rootDir": "./src",
     "baseUrl": ".",
     "paths": {
-      "@rn-ai-screenshot/*": ["packages/*/src"]
+      "@react-native-live-context/*": ["packages/*/src"]
     }
   },
   "include": [

@@ -1,6 +1,12 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from 'react';
 import { AppState, AppStateStatus } from 'react-native';
-import { SDKConfig } from '../types';
+import { SDKConfig, MessageType } from '../types';
 import { createSDKConfig, validateConfig } from '../utils/config';
 import { ServiceDiscovery } from '../services/ServiceDiscovery';
 import { WebSocketClient } from '../services/WebSocketClient';
@@ -8,7 +14,7 @@ import { ScreenshotManager } from '../services/ScreenshotManager';
 import { ContextCollector } from '../services/ContextCollector';
 import { Logger } from '../utils/logger';
 
-interface AIScreenshotContextValue {
+interface LiveContextValue {
   isConnected: boolean;
   isReady: boolean;
   config: SDKConfig;
@@ -18,23 +24,25 @@ interface AIScreenshotContextValue {
   error?: string;
 }
 
-const AIScreenshotContext = createContext<AIScreenshotContextValue | null>(null);
+const LiveContextContext = createContext<LiveContextValue | null>(null);
 
-interface AIScreenshotProviderProps {
+interface LiveContextProviderProps {
   config?: Partial<SDKConfig>;
   children: ReactNode;
 }
 
-export const AIScreenshotProvider: React.FC<AIScreenshotProviderProps> = ({
+export const LiveContextProvider: React.FC<LiveContextProviderProps> = ({
   config: userConfig = {},
   children,
 }) => {
   const [config] = useState<SDKConfig>(() => createSDKConfig(userConfig));
   const [isConnected, setIsConnected] = useState(false);
   const [isReady, setIsReady] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState<'disconnected' | 'connecting' | 'connected' | 'error'>('disconnected');
+  const [connectionStatus, setConnectionStatus] = useState<
+    'disconnected' | 'connecting' | 'connected' | 'error'
+  >('disconnected');
   const [error, setError] = useState<string>();
-  
+
   // Services
   const [serviceDiscovery] = useState(() => new ServiceDiscovery(config));
   const [webSocketClient] = useState(() => new WebSocketClient(config));
@@ -49,10 +57,12 @@ export const AIScreenshotProvider: React.FC<AIScreenshotProviderProps> = ({
         // Validate configuration
         const validationResult = validateConfig(config);
         if (!validationResult.isValid) {
-          throw new Error(`Invalid configuration: ${validationResult.errors.join(', ')}`);
+          throw new Error(
+            `Invalid configuration: ${validationResult.errors.join(', ')}`
+          );
         }
 
-        logger.info('Initializing AI Screenshot SDK', { config });
+        logger.info('Initializing Live Context SDK', { config });
 
         // Check if SDK should be enabled
         if (!shouldEnableSDK()) {
@@ -77,25 +87,27 @@ export const AIScreenshotProvider: React.FC<AIScreenshotProviderProps> = ({
         }
 
         if (!serverUrl) {
-          throw new Error('No server URL available. Please configure serverUrl or enable autoDiscovery.');
+          throw new Error(
+            'No server URL available. Please configure serverUrl or enable autoDiscovery.'
+          );
         }
 
         // Connect to WebSocket server
         await webSocketClient.connect(serverUrl);
         setIsConnected(true);
         setConnectionStatus('connected');
-        
+
         // Initialize screenshot manager
         await screenshotManager.initialize();
-        
+
         // Initialize context collector
         await contextCollector.initialize();
-        
+
         setIsReady(true);
         logger.info('SDK initialized successfully');
-
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+        const errorMessage =
+          err instanceof Error ? err.message : 'Unknown error';
         logger.error('Failed to initialize SDK', { error: errorMessage });
         setError(errorMessage);
         setConnectionStatus('error');
@@ -110,26 +122,37 @@ export const AIScreenshotProvider: React.FC<AIScreenshotProviderProps> = ({
       screenshotManager.cleanup();
       contextCollector.cleanup();
     };
-  }, [config, serviceDiscovery, webSocketClient, screenshotManager, contextCollector, logger]);
+  }, [
+    config,
+    serviceDiscovery,
+    webSocketClient,
+    screenshotManager,
+    contextCollector,
+    logger,
+  ]);
 
   // Handle app state changes
   useEffect(() => {
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
       logger.debug('App state changed', { nextAppState });
-      
+
       if (nextAppState === 'background') {
-        logger.info('App moved to background, pausing screenshot functionality');
+        logger.info(
+          'App moved to background, pausing screenshot functionality'
+        );
         screenshotManager.pause();
-        
+
         // Also pause context collection to save resources
         contextCollector.pause?.();
       } else if (nextAppState === 'active') {
-        logger.info('App moved to foreground, resuming screenshot functionality');
+        logger.info(
+          'App moved to foreground, resuming screenshot functionality'
+        );
         screenshotManager.resume();
-        
+
         // Resume context collection
         contextCollector.resume?.();
-        
+
         // Clear screenshot cache to ensure fresh screenshots
         screenshotManager.clearCache();
       } else if (nextAppState === 'inactive') {
@@ -138,7 +161,10 @@ export const AIScreenshotProvider: React.FC<AIScreenshotProviderProps> = ({
       }
     };
 
-    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    const subscription = AppState.addEventListener(
+      'change',
+      handleAppStateChange
+    );
     return () => subscription?.remove();
   }, [screenshotManager, contextCollector, logger]);
 
@@ -151,27 +177,27 @@ export const AIScreenshotProvider: React.FC<AIScreenshotProviderProps> = ({
         logger.debug('Received WebSocket message', { message });
 
         switch (message.type) {
-          case 'screenshot_request':
+          case MessageType.SCREENSHOT_REQUEST:
             const screenshot = await screenshotManager.takeScreenshot();
             webSocketClient.send({
-              type: 'screenshot_response',
+              type: MessageType.SCREENSHOT_RESPONSE,
               id: message.id,
               timestamp: Date.now(),
               data: screenshot,
             });
             break;
 
-          case 'context_request':
+          case MessageType.CONTEXT_REQUEST:
             const context = await contextCollector.getContext();
             webSocketClient.send({
-              type: 'context_response',
+              type: MessageType.CONTEXT_RESPONSE,
               id: message.id,
               timestamp: Date.now(),
               data: context,
             });
             break;
 
-          case 'command':
+          case MessageType.COMMAND:
             // Handle custom commands
             logger.info('Received command', { command: message.data });
             break;
@@ -180,11 +206,14 @@ export const AIScreenshotProvider: React.FC<AIScreenshotProviderProps> = ({
             logger.warn('Unknown message type', { type: message.type });
         }
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-        logger.error('Error handling WebSocket message', { error: errorMessage });
-        
+        const errorMessage =
+          err instanceof Error ? err.message : 'Unknown error';
+        logger.error('Error handling WebSocket message', {
+          error: errorMessage,
+        });
+
         webSocketClient.send({
-          type: 'error',
+          type: MessageType.ERROR,
           id: message.id,
           timestamp: Date.now(),
           error: {
@@ -223,26 +252,32 @@ export const AIScreenshotProvider: React.FC<AIScreenshotProviderProps> = ({
       // Cleanup listeners
       webSocketClient.removeAllListeners();
     };
-  }, [isConnected, webSocketClient, screenshotManager, contextCollector, logger]);
+  }, [
+    isConnected,
+    webSocketClient,
+    screenshotManager,
+    contextCollector,
+    logger,
+  ]);
 
   // Helper function to determine if SDK should be enabled
   const shouldEnableSDK = (): boolean => {
     const isDevelopment = __DEV__;
-    
+
     if (config.enableInProduction === true) {
       return true;
     }
-    
+
     if (config.enableInProduction === false) {
       return false;
     }
-    
+
     // Default: enable in development, disable in production
     return isDevelopment;
   };
 
   // Context value
-  const contextValue: AIScreenshotContextValue = {
+  const contextValue: LiveContextValue = {
     isConnected,
     isReady,
     config,
@@ -253,17 +288,21 @@ export const AIScreenshotProvider: React.FC<AIScreenshotProviderProps> = ({
   };
 
   return (
-    <AIScreenshotContext.Provider value={contextValue}>
+    <LiveContextContext.Provider value={contextValue}>
       {children}
-    </AIScreenshotContext.Provider>
+    </LiveContextContext.Provider>
   );
 };
 
-// Hook to use the AI Screenshot context
-export const useAIScreenshotContext = () => {
-  const context = useContext(AIScreenshotContext);
+// Hook to use the Live Context
+export const useLiveContextContext = () => {
+  const context = useContext(LiveContextContext);
   if (!context) {
-    throw new Error('useAIScreenshotContext must be used within AIScreenshotProvider');
+    throw new Error(
+      'useLiveContextContext must be used within LiveContextProvider'
+    );
   }
   return context;
 };
+
+

@@ -1,7 +1,9 @@
-// React Native AI Screenshot SDK - Server
+// React Native Live Context - Server
 // Main entry point for the server
 
-export { AIScreenshotServer } from './server/AIScreenshotServer';
+export { LiveContextServer } from './server/LiveContextServer';
 export { MCPServer } from './mcp/MCPServer';
 export { WebSocketServer } from './websocket/WebSocketServer';
+export { RestApiServer } from './api/RestApiServer';
 export type { ServerConfig, MCPTool } from './types';
+

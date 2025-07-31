@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, waitFor, act } from '@testing-library/react-native';
 import { Text, AppState } from 'react-native';
-import { AIScreenshotProvider } from '../../components/AIScreenshotProvider';
-import { useAIScreenshot } from '../../hooks/useAIScreenshot';
+import { LiveContextProvider } from '../../components/LiveContextProvider';
+import { useLiveContext } from '../../hooks/useLiveContext';
 import { ScreenshotView } from '../../components/ScreenshotView';
 import { ConnectionStatus } from '../../components/ConnectionStatus';
 
@@ -30,7 +30,7 @@ jest.mock('react-native', () => ({
 }));
 
 const TestComponent = () => {
-  const { isConnected, takeScreenshot, connectionStatus } = useAIScreenshot();
+  const { isConnected, takeScreenshot, connectionStatus } = useLiveContext();
   
   const handleTakeScreenshot = async () => {
     try {
@@ -51,17 +51,17 @@ const TestComponent = () => {
   );
 };
 
-describe('Screenshot Integration', () => {
+describe('Live Context Integration', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('should integrate all components successfully', async () => {
     const { getByTestId } = render(
-      <AIScreenshotProvider config={{ autoDiscovery: true }}>
+      <LiveContextProvider config={{ autoDiscovery: true }}>
         <TestComponent />
         <ConnectionStatus />
-      </AIScreenshotProvider>
+      </LiveContextProvider>
     );
 
     await waitFor(() => {
@@ -82,9 +82,9 @@ describe('Screenshot Integration', () => {
     });
 
     render(
-      <AIScreenshotProvider>
+      <LiveContextProvider>
         <TestComponent />
-      </AIScreenshotProvider>
+      </LiveContextProvider>
     );
 
     // Simulate app going to background
@@ -105,11 +105,11 @@ describe('Screenshot Integration', () => {
     const onError = jest.fn();
 
     const { getByTestId } = render(
-      <AIScreenshotProvider>
+      <LiveContextProvider>
         <ScreenshotView onScreenshot={onScreenshot} onError={onError}>
           <Text testID="screenshot-content">Content to screenshot</Text>
         </ScreenshotView>
-      </AIScreenshotProvider>
+      </LiveContextProvider>
     );
 
     expect(getByTestId('screenshot-content')).toBeTruthy();
@@ -117,13 +117,13 @@ describe('Screenshot Integration', () => {
 
   it('should show connection status in development', () => {
     const { queryByText } = render(
-      <AIScreenshotProvider config={{ showConnectionStatus: true }}>
+      <LiveContextProvider config={{ showConnectionStatus: true }}>
         <ConnectionStatus />
-      </AIScreenshotProvider>
+      </LiveContextProvider>
     );
 
     // Should render connection status in dev mode
-    expect(queryByText(/AI Screenshot/)).toBeTruthy();
+    expect(queryByText(/Live Context/)).toBeTruthy();
   });
 
   it('should handle configuration errors gracefully', async () => {
@@ -133,9 +133,9 @@ describe('Screenshot Integration', () => {
     };
 
     const { getByTestId } = render(
-      <AIScreenshotProvider config={invalidConfig}>
+      <LiveContextProvider config={invalidConfig}>
         <TestComponent />
-      </AIScreenshotProvider>
+      </LiveContextProvider>
     );
 
     await waitFor(() => {
