@@ -6,7 +6,7 @@ import React, {
   ReactNode,
 } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
-import { SDKConfig } from '../types';
+import { SDKConfig, MessageType } from '../types';
 import { createSDKConfig, validateConfig } from '../utils/config';
 import { ServiceDiscovery } from '../services/ServiceDiscovery';
 import { WebSocketClient } from '../services/WebSocketClient';
@@ -177,27 +177,27 @@ export const LiveContextProvider: React.FC<LiveContextProviderProps> = ({
         logger.debug('Received WebSocket message', { message });
 
         switch (message.type) {
-          case 'screenshot_request':
+          case MessageType.SCREENSHOT_REQUEST:
             const screenshot = await screenshotManager.takeScreenshot();
             webSocketClient.send({
-              type: 'screenshot_response',
+              type: MessageType.SCREENSHOT_RESPONSE,
               id: message.id,
               timestamp: Date.now(),
               data: screenshot,
             });
             break;
 
-          case 'context_request':
+          case MessageType.CONTEXT_REQUEST:
             const context = await contextCollector.getContext();
             webSocketClient.send({
-              type: 'context_response',
+              type: MessageType.CONTEXT_RESPONSE,
               id: message.id,
               timestamp: Date.now(),
               data: context,
             });
             break;
 
-          case 'command':
+          case MessageType.COMMAND:
             // Handle custom commands
             logger.info('Received command', { command: message.data });
             break;
@@ -213,7 +213,7 @@ export const LiveContextProvider: React.FC<LiveContextProviderProps> = ({
         });
 
         webSocketClient.send({
-          type: 'error',
+          type: MessageType.ERROR,
           id: message.id,
           timestamp: Date.now(),
           error: {
